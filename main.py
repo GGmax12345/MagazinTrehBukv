@@ -1,4 +1,4 @@
-"""Каталог товаров для магазина NeDikayaMalina.
+"""Каталог товаров для магазина электроники.
 
 Я делал проект шаг за шагом по методичке: сначала сделал данные товара,
 потом функции для поиска и сортировки, а в конце собрал меню.
@@ -6,18 +6,22 @@
 
 from product import Product
 from datetime import date
+import sys
 
 from console_helper import *
 from products_functions import *
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 ADMIN_PASSWORD = "12345"
 
-products: list[Product] = []
+products: list[Product] = load_products_from_txt_file("prod.dat") or []
 
 
 def print_products():
     """Показывает каталог в начале работы и перед возвратом в меню."""
-    print("Список товаров магазина NeDikayaMalina")
+    print("Список товаров магазина электроники")
     print_all_products(products)
     print_devider("=", 125)
 
@@ -142,7 +146,7 @@ def work_with_buyer_menu():
             found_product = get_product_by_id(products, search_id)
 
             if found_product == None:
-                print(f"Продукт с ID {search_id} не найден")
+                    print(f"Электронное устройство с ID {search_id} не найдено")
             else:
                 print_table_products_header()
                 print_single_product(found_product)
@@ -209,7 +213,7 @@ def work_with_administrator_menu():
             found_product = get_product_by_id(products, search_id)
 
             if found_product == None:
-                print(f"Продукт с ID {search_id} не найден")
+                    print(f"Электронное устройство с ID {search_id} не найдено")
             else:
                 print_table_products_header()
                 print_single_product(found_product)
@@ -222,7 +226,7 @@ def work_with_administrator_menu():
 
             add_product_to_list(products, new_product)
 
-            print("Товар успешно добавлен")
+            print("Электронное устройство успешно добавлено")
         elif choosen_action == 3:
             update_id = input_int(
                 "Введите ID товара для обновления: ", 1, 2_000_000_000
@@ -230,9 +234,9 @@ def work_with_administrator_menu():
             found_product = get_product_by_id(products, update_id)
 
             if found_product == None:
-                print(f"Продукт с ID {update_id} не найден")
+                print(f"Электронное устройство с ID {update_id} не найдено")
             else:
-                print("Введите новые данные для продукта ")
+                print("Введите новые данные для электронного устройства")
 
                 update_product = input_product_data()
 
@@ -240,7 +244,7 @@ def work_with_administrator_menu():
 
                 update_product_by_id(products, update_product)
 
-                print("Продукт успешно обновлён")
+                print("Электронное устройство успешно обновлено")
 
         elif choosen_action == 4:
             delete_id = input_int("Введите ID товара для удаления: ", 1, 2_000_000_000)
@@ -248,9 +252,9 @@ def work_with_administrator_menu():
             is_deleted = delete_product_by_id(products, delete_id)
 
             if is_deleted == False:
-                print(f"Продукт с ID {delete_id} не найден")
+                    print(f"Электронное устройство с ID {delete_id} не найдено")
             else:
-                print("Продукт успешно удалён")
+                    print("Электронное устройство успешно удалено")
         elif choosen_action == 5:
             filename = input_str("Введите имя файла для загрузки: ", 4, 100)
 

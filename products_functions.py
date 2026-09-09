@@ -6,7 +6,7 @@ CRUD
 """
 
 from product import Product
-from datetime import date
+from datetime import date, datetime
 from console_helper import *
 
 SORT_BY_PRICE_ASC = 1
@@ -45,7 +45,7 @@ def input_product_data() -> Product:
     """Собирает данные о товаре из консоли и создаёт объект Product."""
     icon = input_str("Вставьте иконку товара: ", 1, 1)
     release_date = input_date(
-        "Введите дату производства в формет ДД.ММ.ГГГГ: ",
+        "Введите дату выпуска в формате ДД.ММ.ГГГГ: ",
         date(2026, 1, 1),
         date.today(),
     )
@@ -433,7 +433,7 @@ def save_products_to_txt_file_for_print(products: list[Product], filename: str) 
     """
     try:
         with open(filename, "w", encoding="utf-8") as file_out:
-            file_out.write("Список товаров магазина NeDikayaMalina\n\n")
+            file_out.write("Список товаров магазина электроники\n\n")
 
             file_out.write(
                 f"{'ИД':<5}"
