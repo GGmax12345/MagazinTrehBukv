@@ -41,6 +41,17 @@ def get_next_product_id() -> int:
     return global_product_id
 
 
+def get_next_available_product_id(products: list[Product]) -> int:
+    """Возвращает самый маленький свободный ID, чтобы не было пропусков после удаления."""
+    used_ids = {product.id for product in products if product.id is not None}
+
+    candidate = 1
+    while candidate in used_ids:
+        candidate += 1
+
+    return candidate
+
+
 def input_product_data() -> Product:
     """Собирает данные о товаре из консоли и создаёт объект Product."""
     icon = input_str("Вставьте иконку товара: ", 1, 1)

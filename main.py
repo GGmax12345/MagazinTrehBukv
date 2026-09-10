@@ -252,7 +252,8 @@ def work_with_administrator_menu():
 
             new_product = input_product_data()
 
-            new_product.id = get_next_product_id()
+            new_product.id = get_next_available_product_id(products)
+            set_start_product_id(new_product.id)
 
             add_product_to_list(products, new_product)
 
