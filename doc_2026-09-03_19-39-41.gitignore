@@ -18,7 +18,6 @@ htmlcov/
 venv/
 env/
 ENV/
-.env
 # Build and packaging artifacts
 build/
 dist/
