@@ -156,6 +156,7 @@ def work_with_buyer_menu():
 
     is_run = True
     while is_run == True:
+        print_products()
         print("Меню Покупателя:")
         print("1. Найти товар по ID")
         print("2. Сортировать товары")
@@ -191,7 +192,11 @@ def work_with_buyer_menu():
                     "Ошибка покупки товара проверьте что Вы ввели верный ID товара и товара достаточно на складе"
                 )
             else:
-                print("Товар успешно куплен")
+                is_saved = save_products_to_txt_file(products, "prod.dat")
+                if is_saved == False:
+                    print("Ошибка сохранения товара после покупки")
+                else:
+                    print("Товар успешно куплен и остаток сохранён в файл")
         elif choosen_action == 5:
             filename = input_str("Введите имя файла для сохранения: ", 4, 100)
 
