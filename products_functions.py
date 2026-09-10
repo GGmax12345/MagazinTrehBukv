@@ -44,10 +44,10 @@ def get_next_product_id() -> int:
 def input_product_data() -> Product:
     """Собирает данные о товаре из консоли и создаёт объект Product."""
     icon = input_str("Вставьте иконку товара: ", 1, 1)
-    release_date = input_date(
-        "Введите дату выпуска в формате ДД.ММ.ГГГГ: ",
-        date(2026, 1, 1),
-        date.today(),
+    release_year = input_int(
+        "Введите год выпуска товара: ",
+        1900,
+        date.today().year,
     )
     name = input_str("Введите название товара (от 1 до 25 символов): ", 1, 25)
     category = input_str("Введите категорию товара (от 1 до 20 символов): ", 1, 20)
@@ -58,7 +58,7 @@ def input_product_data() -> Product:
     )
     return Product(
         icon=icon,
-        release_date=release_date,
+        release_date=release_year,
         name=name,
         category=category,
         price=price,
@@ -116,7 +116,7 @@ def print_table_products_header():
     print(
         f"{'ИД':<5}"
         f"{'Иконка':<15}"
-        f"{'Дата выпуска':<20}"
+        f"{'Год выпуска':<20}"
         f"{'Название':<35}"
         f"{'Категория':<20}"
         f"{'Цена(руб.)':<12}"
@@ -358,14 +358,63 @@ def buy_product(products: list[Product], search_id: int, request_amount: int) ->
     return True
 
 
-def load_products_from_txt_file(filename: str) -> list[Product]:
-    """Загружает список товаров из служебного текстового файла.
+def parse_print_table_file(filename: str) -> list[Product]:
+    """Читает печатную таблицу из print.txt и возвращает список товаров."""
+    products: list[Product] = []
 
-    Формат файла построчный: сначала количество товаров и последнее выданное ID,
-    затем для каждого товара идут восемь строк с его полями. При любой ошибке
-    открытия, преобразования или структуры функция возвращает None.
-    """
+    with open(filename, "r", encoding="utf-8") as file_in:
+        lines = file_in.read().splitlines()
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("Список товаров") or "ИД" in stripped:
+            continue
+
+        if len(line) < 120:
+            continue
+
+        product_id = int(line[0:5].strip())
+        icon = line[5:20].strip()
+        release_field = line[20:40].strip()
+        name = line[40:75].strip()
+        category = line[75:95].strip()
+        price = int(line[95:107].strip())
+        rating = float(line[107:117].strip())
+        amount = int(line[117:129].strip())
+
+        try:
+            release_year = int(release_field)
+        except ValueError:
+            try:
+                release_year = datetime.strptime(release_field, "%d.%m.%Y").year
+            except ValueError:
+                continue
+
+        products.append(
+            Product(
+                id=product_id,
+                icon=icon,
+                release_date=release_year,
+                name=name,
+                category=category,
+                price=price,
+                rating=rating,
+                amount=amount,
+            )
+        )
+
+    return products
+
+
+def load_products_from_txt_file(filename: str) -> list[Product]:
+    """Загружает товары из служебного файла или из print.txt."""
     try:
+        with open(filename, "r", encoding="utf-8") as file_in:
+            first_line = file_in.readline().strip()
+
+        if first_line.startswith("Список товаров") or "ИД" in first_line:
+            return parse_print_table_file(filename)
+
         with open(filename, "r", encoding="utf-8") as file_in:
             products = []
             count_products = int(file_in.readline())
@@ -373,18 +422,33 @@ def load_products_from_txt_file(filename: str) -> list[Product]:
             set_start_product_id(int(file_in.readline()))
 
             for _ in range(count_products):
+                product_id = int(file_in.readline())
+                icon = file_in.readline().strip()
+                release_line = file_in.readline().strip()
+                name = file_in.readline().strip()
+                category = file_in.readline().strip()
+                price = int(file_in.readline())
+                rating = float(file_in.readline())
+                amount = int(file_in.readline())
+
+                try:
+                    release_year = int(release_line)
+                except ValueError:
+                    try:
+                        release_year = datetime.strptime(release_line, "%d.%m.%Y").year
+                    except ValueError:
+                        release_year = 0
+
                 products.append(
                     Product(
-                        id=int(file_in.readline()),
-                        icon=file_in.readline().strip(),
-                        release_date=datetime.strptime(
-                            file_in.readline().strip(), "%d.%m.%Y"
-                        ).date(),
-                        name=file_in.readline().strip(),
-                        category=file_in.readline().strip(),
-                        price=int(file_in.readline()),
-                        rating=float(file_in.readline()),
-                        amount=int(file_in.readline()),
+                        id=product_id,
+                        icon=icon,
+                        release_date=release_year,
+                        name=name,
+                        category=category,
+                        price=price,
+                        rating=rating,
+                        amount=amount,
                     )
                 )
 
@@ -410,7 +474,7 @@ def save_products_to_txt_file(products: list[Product], filename: str) -> bool:
                     file_out.write(
                         f"{product.id}\n"
                         f"{product.icon}\n"
-                        f"{product.convert_date_to_str()}\n"
+                        f"{product.release_date}\n"
                         f"{product.name}\n"
                         f"{product.category}\n"
                         f"{product.price}\n"
@@ -438,7 +502,7 @@ def save_products_to_txt_file_for_print(products: list[Product], filename: str) 
             file_out.write(
                 f"{'ИД':<5}"
                 f"{'Иконка':<15}"
-                f"{'Дата выпуска':<20}"
+                f"{'Год выпуска':<20}"
                 f"{'Название':<35}"
                 f"{'Категория':<20}"
                 f"{'Цена(руб.)':<12}"
@@ -464,5 +528,18 @@ def save_products_to_txt_file_for_print(products: list[Product], filename: str) 
                 file_out.write("Список товаров пуст")
 
         return True
+    except:
+        return False
+
+
+def import_print_file_to_prod_dat(print_filename: str, prod_filename: str = "prod.dat") -> bool:
+    """Переводит print.txt в service-формат prod.dat."""
+    try:
+        products = parse_print_table_file(print_filename)
+        if not products:
+            return False
+
+        set_start_product_id(max((product.id for product in products), default=0))
+        return save_products_to_txt_file(products, prod_filename)
     except:
         return False

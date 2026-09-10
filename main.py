@@ -6,7 +6,9 @@
 
 from product import Product
 from datetime import date
+import os
 import sys
+from pathlib import Path
 
 from console_helper import *
 from products_functions import *
@@ -14,7 +16,26 @@ from products_functions import *
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-ADMIN_PASSWORD = "12345"
+
+def load_env_file() -> None:
+    """Читает переменные из .env, если они не заданы в окружении."""
+    env_path = Path(__file__).resolve().with_name(".env")
+
+    if not env_path.exists():
+        return
+
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip())
+
+
+load_env_file()
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
 
 products: list[Product] = load_products_from_txt_file("prod.dat") or []
 
@@ -66,6 +87,10 @@ def work_with_sort_products_sub_menu():
         sort_products_by_type_sort(products, SORT_BY_ID_ASC)
     elif choosen_action == 8:
         sort_products_by_type_sort(products, SORT_BY_ID_DESC)
+
+    print("Отсортированный список товаров")
+    print_all_products(products)
+    print_devider("=", 125)
 
 
 def work_with_find_products_sub_menu():
@@ -261,7 +286,9 @@ def work_with_administrator_menu():
             products = load_products_from_txt_file(filename)
 
             if products == None:
-                print("Ошибка загрузки файла")
+                print(
+                    "Ошибка загрузки файла. Используйте служебный файл данных, созданный командой 'Сохранить товары в текстовый файл'. Файл для печати загружать нельзя."
+                )
             else:
                 print("Файл успешно загружен")
 
@@ -290,21 +317,27 @@ def work_with_administrator_menu():
         wait_enter()
 
 
-is_run = True
+def main():
+    """Запускает основное меню и обработку действий пользователя."""
+    is_run = True
 
-while is_run == True:
-    print_products()
+    while is_run == True:
+        print_products()
 
-    print_main_menu()
-    choosen_action = input_int("Выберите пункт меню: ", 0, 2)
+        print_main_menu()
+        choosen_action = input_int("Выберите пункт меню: ", 0, 2)
 
-    if choosen_action == 1:
-        work_with_buyer_menu()
-    elif choosen_action == 2:
-        if auth_is_administrator() == True:
-            print("Пароль успешно введён")
-            work_with_administrator_menu()
-        else:
-            print("Ошибка ввода пароля администратора")
-    elif choosen_action == 0:
-        is_run = False
+        if choosen_action == 1:
+            work_with_buyer_menu()
+        elif choosen_action == 2:
+            if auth_is_administrator() == True:
+                print("Пароль успешно введён")
+                work_with_administrator_menu()
+            else:
+                print("Ошибка ввода пароля администратора")
+        elif choosen_action == 0:
+            is_run = False
+
+
+if __name__ == "__main__":
+    main()

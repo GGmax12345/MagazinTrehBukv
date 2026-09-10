@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import date
 
 
 @dataclass(slots=True)
@@ -11,7 +10,7 @@ class Product:
     """
 
     icon: str
-    release_date: date
+    release_date: int
     name: str
     category: str
     price: int
@@ -20,5 +19,5 @@ class Product:
     id: int | None = None
 
     def convert_date_to_str(self) -> str:
-        """Преобразую дату в формат ДД.ММ.ГГГГ, чтобы удобно выводить в консоль."""
-        return self.release_date.strftime("%d.%m.%Y")
+        """Преобразую год выпуска в строку, чтобы удобно выводить в консоль."""
+        return str(self.release_date)
