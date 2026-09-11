@@ -1,7 +1,4 @@
 """Каталог товаров для магазина электроники.
-
-Я делал проект шаг за шагом по методичке: сначала сделал данные товара,
-потом функции для поиска и сортировки, а в конце собрал меню.
 """
 
 from product import Product
@@ -17,25 +14,8 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 
-def load_env_file() -> None:
-    """Читает переменные из .env, если они не заданы в окружении."""
-    env_path = Path(__file__).resolve().with_name(".env")
 
-    if not env_path.exists():
-        return
-
-    for line in env_path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-
-        key, value = line.split("=", 1)
-        os.environ.setdefault(key.strip(), value.strip())
-
-
-load_env_file()
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
+ADMIN_PASSWORD = '12345' #Пароль
 
 products: list[Product] = load_products_from_txt_file("prod.dat") or []
 
