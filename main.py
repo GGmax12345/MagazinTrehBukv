@@ -240,7 +240,12 @@ def work_with_administrator_menu():
 
             add_product_to_list(products, new_product)
 
-            print("Электронное устройство успешно добавлено")
+            is_saved = save_products_to_txt_file(products, "prod.dat")
+
+            if is_saved:
+                print("Электронное устройство успешно добавлено и сохранено")
+            else:
+                print("Электронное устройство добавлено, но сохранить его не удалось")
         elif choosen_action == 3:
             update_id = input_int(
                 "Введите ID товара для обновления: ", 1, 2_000_000_000
@@ -256,9 +261,12 @@ def work_with_administrator_menu():
 
                 update_product.id = update_id
 
-                update_product_by_id(products, update_product)
+                is_updated = update_product_by_id(products, update_product)
 
-                print("Электронное устройство успешно обновлено")
+                if is_updated and save_products_to_txt_file(products, "prod.dat"):
+                    print("Электронное устройство успешно обновлено и сохранено")
+                else:
+                    print("Электронное устройство обновлено, но сохранить его не удалось")
 
         elif choosen_action == 4:
             delete_id = input_int("Введите ID товара для удаления: ", 1, 2_000_000_000)
@@ -266,9 +274,11 @@ def work_with_administrator_menu():
             is_deleted = delete_product_by_id(products, delete_id)
 
             if is_deleted == False:
-                    print(f"Электронное устройство с ID {delete_id} не найдено")
+                print(f"Электронное устройство с ID {delete_id} не найдено")
+            elif save_products_to_txt_file(products, "prod.dat"):
+                print("Электронное устройство успешно удалено и сохранено")
             else:
-                    print("Электронное устройство успешно удалено")
+                print("Электронное устройство удалено, но сохранить изменения не удалось")
         elif choosen_action == 5:
             filename = input_str("Введите имя файла для загрузки: ", 4, 100)
 
