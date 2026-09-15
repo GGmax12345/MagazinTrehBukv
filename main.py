@@ -116,6 +116,9 @@ def work_with_find_products_sub_menu():
             10_000_000,
         )
 
+        if min_price > max_price:
+            min_price, max_price = max_price, min_price
+
         prices_as_str = f"{min_price}|{max_price}"
 
         finded_products = find_products_by_type_search(

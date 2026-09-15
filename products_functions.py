@@ -33,15 +33,6 @@ def set_start_product_id(product_id: int):
     global_product_id = product_id
 
 
-def get_next_product_id() -> int:
-    """Увеличивает общий счётчик и возвращает новый уникальный ID."""
-    global global_product_id
-
-    global_product_id += 1
-
-    return global_product_id
-
-
 def get_next_available_product_id(products: list[Product]) -> int:
     """Возвращает самый маленький свободный ID, чтобы не было пропусков после удаления."""
     used_ids = {product.id for product in products if product.id is not None}
@@ -55,7 +46,7 @@ def get_next_available_product_id(products: list[Product]) -> int:
 
 def input_product_data() -> Product:
     """Собирает данные о товаре из консоли и создаёт объект Product."""
-    icon = input_str("Вставьте иконку товара: ", 1, 1)
+    icon = input_str("Вставьте иконку товара: ", 1, 4)
     release_year = input_int(
         "Введите год выпуска товара: ",
         1900,
@@ -383,7 +374,7 @@ def parse_print_table_file(filename: str) -> list[Product]:
             continue
 
         match = re.match(
-            r"^(\d+)\s+(\S+)\s+(\d{4})\s+(.+?)\s{2,}(.+?)\s+(\d+)\s+([\d.]+)\s+(\d+)\s*$",
+            r"^(\d+)\s+(\S+)\s+(\d{4})\s+(.+?)\s+(.+?)\s+(\d+)\s+([\d.]+)\s+(\d+)\s*$",
             stripped,
         )
         if match is None:
@@ -498,7 +489,7 @@ def save_products_to_txt_file(products: list[Product], filename: str) -> bool:
                         f"{product.amount}\n"
                     )
             else:
-                file_out.write("0\n0\n")
+                file_out.write("0\n")
 
         return True
     except (OSError, UnicodeError):
