@@ -145,7 +145,7 @@ def work_with_buyer_menu():
         print("5. Сохранить товары в текстовый файл для печати")
         print("0. В Главное меню")
 
-        choosen_action = input_int("Выберите пункт меню: ", 0, 7)
+        choosen_action = input_int("Выберите пункт меню: ", 0, 5)
 
         if choosen_action == 1:
             search_id = input_int("Введите ID товара для поиска: ", 1, 2_000_000_000)
@@ -327,3 +327,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#главное

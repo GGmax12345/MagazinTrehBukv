@@ -8,6 +8,7 @@ CRUD
 from product import Product
 from datetime import date, datetime
 from console_helper import *
+import re
 
 SORT_BY_PRICE_ASC = 1
 SORT_BY_PRICE_DESC = 2
@@ -381,17 +382,18 @@ def parse_print_table_file(filename: str) -> list[Product]:
         if not stripped or stripped.startswith("Список товаров") or "ИД" in stripped:
             continue
 
-        if len(line) < 120:
+        match = re.match(
+            r"^(\d+)\s+(\S+)\s+(\d{4})\s+(.+?)\s{2,}(.+?)\s+(\d+)\s+([\d.]+)\s+(\d+)\s*$",
+            stripped,
+        )
+        if match is None:
             continue
 
-        product_id = int(line[0:5].strip())
-        icon = line[5:20].strip()
-        release_field = line[20:40].strip()
-        name = line[40:75].strip()
-        category = line[75:95].strip()
-        price = int(line[95:107].strip())
-        rating = float(line[107:117].strip())
-        amount = int(line[117:129].strip())
+        product_id, icon, release_field, name, category, price, rating, amount = match.groups()
+        product_id = int(product_id)
+        price = int(price)
+        rating = float(rating)
+        amount = int(amount)
 
         try:
             release_year = int(release_field)
@@ -417,7 +419,7 @@ def parse_print_table_file(filename: str) -> list[Product]:
     return products
 
 
-def load_products_from_txt_file(filename: str) -> list[Product]:
+def load_products_from_txt_file(filename: str) -> list[Product] | None:
     """Загружает товары из служебного файла или из print.txt."""
     try:
         with open(filename, "r", encoding="utf-8") as file_in:
@@ -431,6 +433,9 @@ def load_products_from_txt_file(filename: str) -> list[Product]:
             count_products = int(file_in.readline())
 
             set_start_product_id(int(file_in.readline()))
+
+            if count_products == 0:
+                return products
 
             for _ in range(count_products):
                 product_id = int(file_in.readline())
@@ -464,7 +469,7 @@ def load_products_from_txt_file(filename: str) -> list[Product]:
                 )
 
             return products
-    except:
+    except (OSError, ValueError, UnicodeError, IndexError):
         return None
 
 
@@ -493,10 +498,10 @@ def save_products_to_txt_file(products: list[Product], filename: str) -> bool:
                         f"{product.amount}\n"
                     )
             else:
-                file_out.write("Список товаров пуст")
+                file_out.write("0\n0\n")
 
         return True
-    except:
+    except (OSError, UnicodeError):
         return False
 
 
@@ -539,7 +544,7 @@ def save_products_to_txt_file_for_print(products: list[Product], filename: str) 
                 file_out.write("Список товаров пуст")
 
         return True
-    except:
+    except (OSError, UnicodeError):
         return False
 
 
@@ -552,5 +557,5 @@ def import_print_file_to_prod_dat(print_filename: str, prod_filename: str = "pro
 
         set_start_product_id(max((product.id for product in products), default=0))
         return save_products_to_txt_file(products, prod_filename)
-    except:
+    except (OSError, ValueError, UnicodeError):
         return False

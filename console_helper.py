@@ -7,23 +7,18 @@ def input_int(message: str, min_val: int, max_val: int) -> int:
     Это удобно, потому что пользователь может случайно написать букву,
     отрицательное число или число за границами допустимого диапазона.
     """
-    is_correct_input = False
-    input_int = 0
-
-    while is_correct_input == False:
+    while True:
         try:
-            input_int = int(input(message))
+            value = int(input(message))
 
-            if input_int < min_val or input_int > max_val:
+            if value < min_val or value > max_val:
                 print(
                     f"Ошибка ввода. Введённое число должно быть от {min_val} до {max_val}"
                 )
             else:
-                is_correct_input = True
-        except:
-            print(f"Ошибка ввода. Вы ввели не целое число")
-
-    return input_int
+                return value
+        except ValueError:
+            print("Ошибка ввода. Вы ввели не число")
 
 
 def input_float(message: str, min_val: float, max_val: float) -> float:
@@ -32,23 +27,18 @@ def input_float(message: str, min_val: float, max_val: float) -> float:
     Здесь нужны дробные числа, например рейтинг товара. Вводить надо
     через точку: 4.5, а не через запятую.
     """
-    is_correct_input = False
-    input_int = 0
-
-    while is_correct_input == False:
+    while True:
         try:
-            input_int = float(input(message))
+            value = float(input(message))
 
-            if input_int < min_val or input_int > max_val:
+            if value < min_val or value > max_val:
                 print(
                     f"Ошибка ввода. Введённое число должно быть от {min_val} до {max_val}"
                 )
             else:
-                is_correct_input = True
-        except:
-            print(f"Ошибка ввода. Вы ввели не целое число")
-
-    return input_int
+                return value
+        except ValueError:
+            print("Ошибка ввода. Вы ввели не число")
 
 
 def input_str(message: str, min_len: int, max_len: int) -> str:
@@ -92,8 +82,8 @@ def input_date(message: str, min_date: date, max_date: date) -> date:
                 )
             else:
                 is_correct_input = True
-        except:
-            print(f"Ошибка ввода. Вы ввели дату не в формате ДД.ММ.ГГГГ")
+        except ValueError:
+            print("Ошибка ввода. Вы ввели дату не в формате ДД.ММ.ГГГГ")
 
     return input_date
 
@@ -109,3 +99,4 @@ def wait_enter():
     print_devider("=", 125)
     print("\n\nДля продолжения работы нажмите <Enter>\n\n")
     input()
+#защита 
