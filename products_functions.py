@@ -49,7 +49,7 @@ def input_product_data() -> Product:
     icon = input_str("Вставьте иконку товара: ", 1, 4)
     release_year = input_int(
         "Введите год выпуска товара: ",
-        1900,
+        1990,
         date.today().year,
     )
     name = input_str("Введите название товара (от 1 до 25 символов): ", 1, 25)
@@ -302,7 +302,7 @@ def sort_products_by_type_sort(products: list[Product], type_sort: int):
 def find_products_by_type_search(
     products: list[Product], type_search: int, parameter: str
 ) -> list[Product]:
-    """Возвращает товары, найденные выбранным способом поиска.
+    """Во  поиска.
 
     Доступны поиск по части названия, по категории и по диапазону цены.
     Исходный список не изменяется.
